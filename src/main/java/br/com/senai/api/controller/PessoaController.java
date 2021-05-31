@@ -4,11 +4,9 @@ import br.com.senai.domain.model.Pessoa;
 import br.com.senai.domain.repository.PessoaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @AllArgsConstructor
@@ -50,4 +48,37 @@ public class PessoaController {
                 .map(pessoa -> ResponseEntity.ok(pessoa))
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping
+    public Pessoa cadastrarPessoa(@Valid @RequestBody Pessoa pessoa) {
+        return pessoaRepository.save(pessoa);
+    }
+
+    @PutMapping("/{pessoaId}")
+    public ResponseEntity<Pessoa> editarPessoa(
+            @Valid @PathVariable long pessoaId,
+            @RequestBody Pessoa pessoa
+    ){
+        if(!pessoaRepository.existsById(pessoaId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        pessoa.setId(pessoaId);
+        pessoa = pessoaRepository.save(pessoa);
+
+        return ResponseEntity.ok(pessoa);
+    }
+
+    @DeleteMapping("/{pessoaId}")
+    public ResponseEntity<Pessoa> removerPessoa(@PathVariable long pessoaId) {
+
+        if(!pessoaRepository.existsById(pessoaId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        pessoaRepository.deleteById(pessoaId);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
