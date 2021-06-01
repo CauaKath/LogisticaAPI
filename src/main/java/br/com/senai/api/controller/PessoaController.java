@@ -2,6 +2,7 @@ package br.com.senai.api.controller;
 
 import br.com.senai.domain.model.Pessoa;
 import br.com.senai.domain.repository.PessoaRepository;
+import br.com.senai.domain.service.PessoaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class PessoaController {
 
 //    @Autowired
     private PessoaRepository pessoaRepository;
+    private PessoaService pessoaService;
 
     @GetMapping
     public List<Pessoa> listar() {
@@ -51,7 +53,7 @@ public class PessoaController {
 
     @PostMapping
     public Pessoa cadastrarPessoa(@Valid @RequestBody Pessoa pessoa) {
-        return pessoaRepository.save(pessoa);
+        return pessoaService.cadastrarPessoa(pessoa);
     }
 
     @PutMapping("/{pessoaId}")
@@ -59,26 +61,12 @@ public class PessoaController {
             @Valid @PathVariable long pessoaId,
             @RequestBody Pessoa pessoa
     ){
-        if(!pessoaRepository.existsById(pessoaId)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        pessoa.setId(pessoaId);
-        pessoa = pessoaRepository.save(pessoa);
-
-        return ResponseEntity.ok(pessoa);
+        return pessoaService.editarPessoa(pessoaId, pessoa);
     }
 
     @DeleteMapping("/{pessoaId}")
     public ResponseEntity<Pessoa> removerPessoa(@PathVariable long pessoaId) {
-
-        if(!pessoaRepository.existsById(pessoaId)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        pessoaRepository.deleteById(pessoaId);
-
-        return ResponseEntity.noContent().build();
+        return pessoaService.removerPessoa(pessoaId);
     }
 
 }
