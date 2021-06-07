@@ -4,7 +4,6 @@ import br.com.senai.domain.exception.TrataException;
 import br.com.senai.domain.model.Pessoa;
 import br.com.senai.domain.repository.PessoaRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,28 +26,13 @@ public class PessoaService {
     }
 
     @Transactional
-    public ResponseEntity<Pessoa> editarPessoa(long pessoaId, Pessoa pessoa) {
-
-        if (!pessoaRepository.existsById(pessoaId)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        pessoa.setId(pessoaId);
-        pessoa = pessoaRepository.save(pessoa);
-
-        return ResponseEntity.ok(pessoa);
+    public void removerPessoa(long pessoaId) {
+        pessoaRepository.deleteById(pessoaId);
     }
 
-    @Transactional
-    public ResponseEntity<Pessoa> removerPessoa(long pessoaId) {
-
-        if (!pessoaRepository.existsById(pessoaId)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        pessoaRepository.deleteById(pessoaId);
-
-        return ResponseEntity.noContent().build();
+    public Pessoa buscar(long pessoaId) {
+        return pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new TrataException("Pessoa não encontrada"));
     }
 
 }
