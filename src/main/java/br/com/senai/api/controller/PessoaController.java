@@ -61,12 +61,25 @@ public class PessoaController {
             @Valid @PathVariable long pessoaId,
             @RequestBody Pessoa pessoa
     ){
-        return pessoaService.editarPessoa(pessoaId, pessoa);
+        if (!pessoaRepository.existsById(pessoaId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        pessoa.setId(pessoaId);
+        pessoa = pessoaRepository.save(pessoa);
+
+        return ResponseEntity.ok(pessoa);
     }
 
     @DeleteMapping("/{pessoaId}")
     public ResponseEntity<Pessoa> removerPessoa(@PathVariable long pessoaId) {
-        return pessoaService.removerPessoa(pessoaId);
+        if (!pessoaRepository.existsById(pessoaId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        pessoaService.removerPessoa(pessoaId);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
