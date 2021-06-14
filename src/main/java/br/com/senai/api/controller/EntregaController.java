@@ -1,5 +1,8 @@
 package br.com.senai.api.controller;
 
+import br.com.senai.api.assembler.EntregaAssembler;
+import br.com.senai.api.model.EntregaModel;
+import br.com.senai.api.model.input.EntregaInput;
 import br.com.senai.domain.model.Entrega;
 import br.com.senai.domain.repository.EntregaRepository;
 import br.com.senai.domain.service.SolicitacaoEntregaService;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @AllArgsConstructor
@@ -16,21 +20,24 @@ import java.util.List;
 public class EntregaController {
 
     private SolicitacaoEntregaService solicitacaoEntregaService;
-    private EntregaRepository entregaRepository;
+    private EntregaAssembler entregaAssembler;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Entrega solicitar(@RequestBody Entrega entrega) {
-        return solicitacaoEntregaService.solicitar(entrega);
+    public EntregaModel solicitar(@Valid @RequestBody EntregaInput entregaInput) {
+        Entrega novaEntrega = entregaAssembler.toEntity(entregaInput);
+        Entrega entrega = solicitacaoEntregaService.solicitar(novaEntrega);
+
+        return entregaAssembler.toModel(entrega);
     }
 
     @GetMapping
-    public List<Entrega> listar() {
+    public List<EntregaModel> listar() {
         return solicitacaoEntregaService.listar();
     }
 
     @GetMapping("/{entregaId}")
-    public ResponseEntity<Entrega> buscarPorId(@PathVariable long entregaId) {
+    public ResponseEntity<EntregaModel> buscarPorId(@PathVariable long entregaId) {
         return solicitacaoEntregaService.buscarPorId(entregaId);
     }
 
