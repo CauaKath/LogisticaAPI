@@ -28,7 +28,7 @@ public class Entrega {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "pessoa_id")
-    private Pessoa pessoa;
+    private Pessoa remetente;
 
     @Valid
     @NotNull
