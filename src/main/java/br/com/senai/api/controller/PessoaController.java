@@ -1,5 +1,8 @@
 package br.com.senai.api.controller;
 
+import br.com.senai.api.assembler.PessoaAssembler;
+import br.com.senai.api.model.PessoaModel;
+import br.com.senai.api.model.input.PessoaInput;
 import br.com.senai.domain.model.Pessoa;
 import br.com.senai.domain.repository.PessoaRepository;
 import br.com.senai.domain.service.PessoaService;
@@ -21,54 +24,49 @@ public class PessoaController {
 //    @Autowired
     private PessoaRepository pessoaRepository;
     private PessoaService pessoaService;
+    private PessoaAssembler pessoaAssembler;
 
     @GetMapping
-    public List<Pessoa> listar() {
-//        return entityManager.createQuery("FROM Pessoa", Pessoa.class).getResultList();
-        return pessoaRepository.findAll();
+    public List<PessoaModel> listar() {
+        return pessoaService.listar();
     }
 
     @GetMapping("/nome/{pessoaNome}")
-    public List<Pessoa> listarPorNome(@PathVariable String pessoaNome) {
-        return pessoaRepository.findByNome(pessoaNome);
+    public List<PessoaModel> listarPorNome(@PathVariable String pessoaNome) {
+        return pessoaService.listarPorNome(pessoaNome);
     }
 
     @GetMapping("/nome/containing/{nomeContaining}")
-    public List<Pessoa> listarNomeContaining(@PathVariable String nomeContaining) {
-        return pessoaRepository.findByNomeContaining(nomeContaining);
+    public List<PessoaModel> listarNomeContaining(@PathVariable String nomeContaining) {
+        return pessoaService.listarPorNomeContaining(nomeContaining);
     }
 
     @GetMapping("{pessoaId}")
-    public ResponseEntity<Pessoa> buscarPorId(@PathVariable Long pessoaId) {
-//        Optional<Pessoa> pessoa = pessoaRepository.findById(pessoaId);
-//
-//        if(pessoa.isPresent()) {
-//            return ResponseEntity.ok(pessoa.get());
-//        }
-//        return ResponseEntity.notFound().build();
-        return pessoaRepository.findById(pessoaId)
-                .map(pessoa -> ResponseEntity.ok(pessoa))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PessoaModel> buscarPorId(@PathVariable Long pessoaId) {
+        return pessoaService.buscarPorId(pessoaId);
     }
 
     @PostMapping
-    public Pessoa cadastrarPessoa(@Valid @RequestBody Pessoa pessoa) {
-        return pessoaService.cadastrarPessoa(pessoa);
+    public PessoaModel cadastrarPessoa(@Valid @RequestBody PessoaInput pessoaInput) {
+        Pessoa novaPessoa = pessoaAssembler.toEntity(pessoaInput);
+        Pessoa pessoa = pessoaService.cadastrarPessoa(novaPessoa);
+
+        return pessoaAssembler.toModel(pessoa);
     }
 
     @PutMapping("/{pessoaId}")
-    public ResponseEntity<Pessoa> editarPessoa(
+    public ResponseEntity<PessoaModel> editarPessoa(
             @Valid @PathVariable long pessoaId,
-            @RequestBody Pessoa pessoa
+            @RequestBody PessoaInput pessoaInput
     ){
         if (!pessoaRepository.existsById(pessoaId)) {
             return ResponseEntity.notFound().build();
         }
 
-        pessoa.setId(pessoaId);
-        pessoa = pessoaRepository.save(pessoa);
+        Pessoa novaPessoa = pessoaAssembler.toEntity(pessoaInput);
+        Pessoa pessoa = pessoaService.editarPessoa(novaPessoa, pessoaId);
 
-        return ResponseEntity.ok(pessoa);
+        return ResponseEntity.ok(pessoaAssembler.toModel(pessoa));
     }
 
     @DeleteMapping("/{pessoaId}")
