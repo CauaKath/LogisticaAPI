@@ -1,16 +1,19 @@
 package br.com.senai.domain.service;
 
-import br.com.senai.domain.exception.TrataException;
+import br.com.senai.api.assembler.EntregaAssembler;
+import br.com.senai.api.model.DestinatarioModel;
+import br.com.senai.api.model.EntregaModel;
+import br.com.senai.api.model.PessoaModel;
+import br.com.senai.api.model.RemetenteModel;
 import br.com.senai.domain.model.Entrega;
 import br.com.senai.domain.model.Pessoa;
 import br.com.senai.domain.model.StatusEntrega;
 import br.com.senai.domain.repository.EntregaRepository;
-import br.com.senai.domain.repository.PessoaRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.TransactionalException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,10 +23,11 @@ public class SolicitacaoEntregaService {
 
     private PessoaService pessoaService;
     private EntregaRepository entregaRepository;
+    private EntregaAssembler entregaAssembler;
 
     public Entrega solicitar(Entrega entrega) {
-        Pessoa pessoa = pessoaService.buscar(entrega.getPessoa().getId());
-        entrega.setPessoa(pessoa);
+        Pessoa remetente = pessoaService.buscarRemetente(entrega.getRemetente().getId());
+        entrega.setRemetente(remetente);
 
         entrega.setStatus(StatusEntrega.PENDENTE);
         entrega.setData_pedido(LocalDateTime.now());
@@ -32,13 +36,15 @@ public class SolicitacaoEntregaService {
         return entregaRepository.save(entrega);
     }
 
-    public List<Entrega> listar() {
-        return entregaRepository.findAll();
+    public List<EntregaModel> listar() {
+        return entregaAssembler.toCollectionModel(entregaRepository.findAll());
     }
 
-    public ResponseEntity<Entrega> buscarPorId(long entregaId) {
+    public ResponseEntity<EntregaModel> buscarPorId(long entregaId) {
         return entregaRepository.findById(entregaId)
-                .map(ResponseEntity::ok)
+                .map(entrega -> {
+                    return ResponseEntity.ok(entregaAssembler.toModel(entrega));
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 }
