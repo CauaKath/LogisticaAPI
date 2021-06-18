@@ -1,5 +1,6 @@
 package br.com.senai.api.exceptionhandler;
 
+import br.com.senai.domain.exception.EntityNotFoundException;
 import br.com.senai.domain.exception.TrataException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -53,6 +54,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(TrataException.class)
     public ResponseEntity<Object> handleTrata(TrataException ex, WebRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        Problema problema = new Problema();
+        problema.setStatus(status.value());
+        problema.setDataHora(LocalDateTime.now());
+        problema.setTitulo(ex.getMessage());
+
+        return handleExceptionInternal(ex, problema, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
 
         Problema problema = new Problema();
         problema.setStatus(status.value());
