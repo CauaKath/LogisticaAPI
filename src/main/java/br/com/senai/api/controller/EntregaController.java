@@ -5,6 +5,7 @@ import br.com.senai.api.model.EntregaModel;
 import br.com.senai.api.model.input.EntregaInput;
 import br.com.senai.domain.model.Entrega;
 import br.com.senai.domain.repository.EntregaRepository;
+import br.com.senai.domain.service.EntregaService;
 import br.com.senai.domain.service.SolicitacaoEntregaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ import java.util.List;
 public class EntregaController {
 
     private SolicitacaoEntregaService solicitacaoEntregaService;
+    private EntregaService entregaService;
+
     private EntregaAssembler entregaAssembler;
 
     @PostMapping
@@ -39,6 +42,12 @@ public class EntregaController {
     @GetMapping("/{entregaId}")
     public ResponseEntity<EntregaModel> buscarPorId(@PathVariable long entregaId) {
         return solicitacaoEntregaService.buscarPorId(entregaId);
+    }
+
+    @PutMapping("/{entregaId}/finalizacao")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void finalizarEntrega(@PathVariable long entregaId) {
+        entregaService.finalizarEntrega(entregaId);
     }
 
 }
