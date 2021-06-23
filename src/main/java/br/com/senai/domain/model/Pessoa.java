@@ -4,15 +4,10 @@ import br.com.senai.domain.ValidationGroups;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.Email;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.validation.groups.Default;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -33,10 +28,14 @@ public class Pessoa {
     @Size(max = 80)
     String nome;
 
-    @NotBlank
-    @Email
-    @Size(min = 5)
-    String email;
+//    @NotBlank
+//    @Email
+//    @Size(min = 5)
+//    String email;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuario_id")
+    Usuario usuario;
 
     @NotBlank
     @Size(min = 14, max = 14)

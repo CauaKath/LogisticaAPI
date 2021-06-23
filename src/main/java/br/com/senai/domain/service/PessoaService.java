@@ -1,7 +1,7 @@
 package br.com.senai.domain.service;
 
 import br.com.senai.api.assembler.PessoaAssembler;
-import br.com.senai.api.model.PessoaModel;
+import br.com.senai.api.model.PessoaDTO;
 import br.com.senai.domain.exception.TrataException;
 import br.com.senai.domain.model.Pessoa;
 import br.com.senai.domain.repository.PessoaRepository;
@@ -21,29 +21,29 @@ public class PessoaService {
 
     @Transactional // Rollback nos dados
     public Pessoa cadastrarPessoa(Pessoa pessoa) {
-        boolean emailValidation = pessoaRepository.findByEmail(pessoa.getEmail())
-                .isPresent();
-
-        if(emailValidation) {
-            throw new TrataException("Já existe uma pessoa com este e-mail cadastrado.");
-        }
+//        boolean emailValidation = pessoaRepository.findByEmail(pessoa.getUsuario().getEmail())
+//                .isPresent();
+//
+//        if(emailValidation) {
+//            throw new TrataException("Já existe uma pessoa com este e-mail cadastrado.");
+//        }
 
         return pessoaRepository.save(pessoa);
     }
 
-    public List<PessoaModel> listar() {
+    public List<PessoaDTO> listar() {
         return pessoaAssembler.toCollectionModel(pessoaRepository.findAll());
     }
 
-    public List<PessoaModel> listarPorNome(String pessoaNome) {
+    public List<PessoaDTO> listarPorNome(String pessoaNome) {
         return pessoaAssembler.toCollectionModel(pessoaRepository.findByNome(pessoaNome));
     }
 
-    public List<PessoaModel> listarPorNomeContaining(String nomeContaining) {
+    public List<PessoaDTO> listarPorNomeContaining(String nomeContaining) {
         return pessoaAssembler.toCollectionModel(pessoaRepository.findByNomeContaining(nomeContaining));
     }
 
-    public ResponseEntity<PessoaModel> buscarPorId(Long pessoaId) {
+    public ResponseEntity<PessoaDTO> buscarPorId(Long pessoaId) {
         return pessoaRepository.findById(pessoaId)
                 .map(pessoa -> {
                     return ResponseEntity.ok(pessoaAssembler.toModel(pessoa));

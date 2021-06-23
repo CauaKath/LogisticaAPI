@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 @Setter
 @Getter
-public class DestinatarioInput {
+public class DestinatarioInputDTO {
 
     @NotBlank
     private String nome;
