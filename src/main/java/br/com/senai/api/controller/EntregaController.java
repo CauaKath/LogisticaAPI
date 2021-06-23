@@ -1,10 +1,9 @@
 package br.com.senai.api.controller;
 
 import br.com.senai.api.assembler.EntregaAssembler;
-import br.com.senai.api.model.EntregaModel;
-import br.com.senai.api.model.input.EntregaInput;
+import br.com.senai.api.model.EntregaDTO;
+import br.com.senai.api.model.input.EntregaInputDTO;
 import br.com.senai.domain.model.Entrega;
-import br.com.senai.domain.repository.EntregaRepository;
 import br.com.senai.domain.service.EntregaService;
 import br.com.senai.domain.service.SolicitacaoEntregaService;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,7 @@ public class EntregaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EntregaModel solicitar(@Valid @RequestBody EntregaInput entregaInput) {
+    public EntregaDTO solicitar(@Valid @RequestBody EntregaInputDTO entregaInput) {
         Entrega novaEntrega = entregaAssembler.toEntity(entregaInput);
         Entrega entrega = solicitacaoEntregaService.solicitar(novaEntrega);
 
@@ -35,12 +34,12 @@ public class EntregaController {
     }
 
     @GetMapping
-    public List<EntregaModel> listar() {
+    public List<EntregaDTO> listar() {
         return solicitacaoEntregaService.listar();
     }
 
     @GetMapping("/{entregaId}")
-    public ResponseEntity<EntregaModel> buscarPorId(@PathVariable long entregaId) {
+    public ResponseEntity<EntregaDTO> buscarPorId(@PathVariable long entregaId) {
         return solicitacaoEntregaService.buscarPorId(entregaId);
     }
 
