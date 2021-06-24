@@ -4,7 +4,10 @@ import br.com.senai.api.assembler.PessoaAssembler;
 import br.com.senai.api.model.PessoaDTO;
 import br.com.senai.domain.exception.TrataException;
 import br.com.senai.domain.model.Pessoa;
+import br.com.senai.domain.model.Role;
+import br.com.senai.domain.model.RoleUsuarios;
 import br.com.senai.domain.repository.PessoaRepository;
+import br.com.senai.domain.repository.RoleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,9 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
     private PessoaAssembler pessoaAssembler;
 
+    private RoleUsuariosService roleUsuariosService;
+
+
     @Transactional // Rollback nos dados
     public Pessoa cadastrarPessoa(Pessoa pessoa) {
 //        boolean emailValidation = pessoaRepository.findByEmail(pessoa.getUsuario().getEmail())
@@ -27,8 +33,15 @@ public class PessoaService {
 //        if(emailValidation) {
 //            throw new TrataException("Já existe uma pessoa com este e-mail cadastrado.");
 //        }
+        Pessoa novaPessoa = pessoaRepository.save(pessoa);
 
-        return pessoaRepository.save(pessoa);
+        RoleUsuarios roleUsuario = new RoleUsuarios();
+        roleUsuario.setRole_nome_role("ROLE_USER");
+        roleUsuario.setUsuarios_id(novaPessoa.getUsuario().getId());
+
+        roleUsuariosService.cadastrarRoleUsuario(roleUsuario);
+
+        return novaPessoa;
     }
 
     public List<PessoaDTO> listar() {
