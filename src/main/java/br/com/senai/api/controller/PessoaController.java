@@ -1,11 +1,14 @@
 package br.com.senai.api.controller;
 
 import br.com.senai.api.assembler.PessoaAssembler;
+import br.com.senai.api.assembler.UsuarioAssembler;
 import br.com.senai.api.model.PessoaDTO;
 import br.com.senai.api.model.input.PessoaInputDTO;
 import br.com.senai.domain.model.Pessoa;
+import br.com.senai.domain.model.RoleUsuarios;
 import br.com.senai.domain.repository.PessoaRepository;
 import br.com.senai.domain.service.PessoaService;
+import br.com.senai.domain.service.RoleUsuariosService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,7 +23,11 @@ import java.util.List;
 public class PessoaController {
 
     private PessoaRepository pessoaRepository;
+
+    private RoleUsuariosService roleUsuariosService;
     private PessoaService pessoaService;
+
+    private UsuarioAssembler usuarioAssembler;
     private PessoaAssembler pessoaAssembler;
 
     @GetMapping
