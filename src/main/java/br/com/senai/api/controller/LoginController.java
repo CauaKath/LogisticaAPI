@@ -1,5 +1,6 @@
 package br.com.senai.api.controller;
 
+import br.com.senai.api.assembler.UsuarioAssembler;
 import br.com.senai.domain.model.AuthenticationResponse;
 import br.com.senai.domain.model.Usuario;
 import br.com.senai.security.ImplementsUserDetailsService;
@@ -22,6 +23,8 @@ public class LoginController {
     private ImplementsUserDetailsService implementsUserDetailsService;
     private JWTUtil jwtUtil;
 
+    private UsuarioAssembler usuarioAssembler;
+
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody Usuario usuario) throws Exception {
         try {
@@ -38,7 +41,7 @@ public class LoginController {
         );
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, usuarioAssembler.toModel(usuario)));
     }
 
 }
